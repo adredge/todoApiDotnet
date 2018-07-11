@@ -13,14 +13,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="IntegrationTests\**" />
+    <Compile Remove="UnitTests\**" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="IntegrationTests\**" />
+    <EmbeddedResource Remove="UnitTests\**" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="IntegrationTests\**" />
+    <None Remove="UnitTests\**" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="IntegrationTests\**" />
+    <Content Remove="UnitTests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="UnitTests\bin\Debug\netcoreapp2.1\UnitTests.deps.json" />
+    <_ContentIncludedByDefault Remove="UnitTests\bin\Debug\netcoreapp2.1\UnitTests.runtimeconfig.dev.json" />
+    <_ContentIncludedByDefault Remove="UnitTests\bin\Debug\netcoreapp2.1\UnitTests.runtimeconfig.json" />
+    <_ContentIncludedByDefault Remove="UnitTests\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="UnitTests\obj\project.packagespec.json" />
   </ItemGroup>
 </Project>
