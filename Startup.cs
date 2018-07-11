@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Web.Data;
+using Web.Facade;
 
 namespace Web
 {
@@ -38,6 +39,7 @@ namespace Web
                     = Configuration.GetSection("MongoConnection:Database").Value;
             });
             services.AddTransient<IRepository, Repository>();
+            services.AddTransient<IToDoListFacade, ToDoListFacade>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

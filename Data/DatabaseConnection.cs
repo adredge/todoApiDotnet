@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using Web.Model;
+using Web.DataModel;
 
 namespace Web.Data
 {
@@ -14,7 +14,7 @@ namespace Web.Data
                 _database = client.GetDatabase("todoDotNet"); //settings.Value.Database);
         }
 
-        public IMongoCollection<ToDoList> Lists => _database.GetCollection<ToDoList>("todolists");
+        public IMongoCollection<ToDoListDataModel> Lists => _database.GetCollection<ToDoListDataModel>("todolists");
 
         //public IMongoCollection<ToDoItem> Items => _database.GetCollection<ToDoItem>("items");
     }

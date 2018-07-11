@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Web.Model;
+using Web.DataModel;
 
 namespace Web.Data
 {
@@ -17,11 +17,11 @@ namespace Web.Data
             _db = new DatabaseConnection();
         }
 
-        public ToDoList GetList(string userId, string listId)
+        public ToDoListDataModel GetList(string userId, string listId)
         {
             try
             {
-                var builder = Builders<ToDoList>.Filter;
+                var builder = Builders<ToDoListDataModel>.Filter;
                 var listFilter = builder.Eq("userId", userId);
 
                 if (listId != null && listId != "")
@@ -37,16 +37,16 @@ namespace Web.Data
             }
         }
 
-        public ToDoList AddItem(string userId, string listId, string newItemName)
+        public ToDoListDataModel AddItem(string userId, string listId, string newItemName)
         {
-            var newItem = new ToDoItem
+            var newItem = new ToDoItemDataModel
             {
                 Id = ObjectId.GenerateNewId(),
                 Name = newItemName,
                 Complete = false
             };
 
-            var listFilter = Builders<ToDoList>.Filter.Eq("userId", userId);
+            var listFilter = Builders<ToDoListDataModel>.Filter.Eq("userId", userId);
             var list = _db.Lists.FindSync(listFilter).FirstOrDefault();
 
             if (list == null) return null;
@@ -62,14 +62,14 @@ namespace Web.Data
             return list;
         }
 
-        public ToDoList CreateEmptyList(string userId, string listName)
+        public ToDoListDataModel CreateEmptyList(string userId, string listName)
         {
-            var newList = new ToDoList
+            var newList = new ToDoListDataModel
             {
                 UserId = userId,
                 Name = listName,
 
-                Items = new List<ToDoItem>()
+                Items = new List<ToDoItemDataModel>()
             };
             _db.Lists.InsertOne(newList);
             return newList;
@@ -77,13 +77,13 @@ namespace Web.Data
 
         public void DeleteListsForUser(string userId)
         {
-            var listFilter = Builders<ToDoList>.Filter.Eq("userId", userId);
+            var listFilter = Builders<ToDoListDataModel>.Filter.Eq("userId", userId);
             _db.Lists.DeleteMany(listFilter);
         }
 
-        public List<ToDoList> GetLists(string userId)
+        public List<ToDoListDataModel> GetLists(string userId)
         {
-            var listFilter = Builders<ToDoList>.Filter.Eq("userId", userId);
+            var listFilter = Builders<ToDoListDataModel>.Filter.Eq("userId", userId);
             return _db.Lists.FindSync(listFilter).ToList();
         }
 
@@ -120,7 +120,7 @@ namespace Web.Data
             var list = GetExistingList(userId, listId);
             var itemToRemoveIndex = GetItemIndexWithId(list, itemId);
 
-            list.Items.RemoveRange(itemToRemoveIndex, list.Items.Count - itemToRemoveIndex);
+            list.Items.RemoveAt(itemToRemoveIndex);
 
             _db.Lists
                 .ReplaceOneAsync(n => n.Id.Equals(new ObjectId(listId))
@@ -130,12 +130,12 @@ namespace Web.Data
 
         public void DeleteList(string userId, string listId)
         {
-            var builder = Builders<ToDoList>.Filter;
+            var builder = Builders<ToDoListDataModel>.Filter;
             var listFilter = builder.Eq("userId", userId) & builder.Eq("_id", new ObjectId(listId));
             _db.Lists.DeleteOne(listFilter);
         }
 
-        private ToDoList GetExistingList(string userId, string listId)
+        private ToDoListDataModel GetExistingList(string userId, string listId)
         {
             var list = GetList(userId, listId);
 
@@ -143,7 +143,7 @@ namespace Web.Data
             return list;
         }
 
-        private int GetItemIndexWithId(ToDoList list, string itemId)
+        private int GetItemIndexWithId(ToDoListDataModel list, string itemId)
         {
             var itemToUpdateIndex = list.Items.FindIndex(x => x.Id == new ObjectId(itemId));
 
