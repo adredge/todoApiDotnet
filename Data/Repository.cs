@@ -26,83 +26,57 @@ namespace Web.Data
             try
             {
                 var builder = Builders<ToDoList>.Filter;
-                var listFilter = builder.Eq("userId", userId) & builder.Eq("_id", new ObjectId(listId));
-                var list = _db.Lists.FindSync(listFilter).FirstOrDefault();
-                //var items = new List<ToDoItem>();
-//                var itemIds = new List<ObjectId>();
+                var listFilter = builder.Eq("userId", userId);
 
-//
-//                foreach (var i in list.ItemIds)
-//                {
-//                    var itemFilter = Builders<ToDoItem>.Filter.Eq("_id", i);
-//                    var item = _db.Items.FindSync(itemFilter).FirstOrDefault();
-//                    items.Add(item);
-//                }
-//
-                //list.Items = items;
-//                list.ItemIds = itemIds;
+                if (listId != null && listId != "")
+                    listFilter = listFilter & builder.Eq("_id", new ObjectId(listId));
+
+                var list = _db.Lists.FindSync(listFilter).FirstOrDefault();
+
                 return list;
             }
             catch (Exception ex)
             {
-                //Console.WriteLine("exception using db access for user " + userId + ". Ex: " + ex.Message);
                 return null;
             }
         }
 
         public ToDoList AddItem(string userId, string listId, string newItemName)
         {
-//            try
-//            {
-                var newItem = new ToDoItem
-                {
-                    Id = ObjectId.GenerateNewId(),
-                    Name = newItemName,
-                    Complete = false
-                };
+            var newItem = new ToDoItem
+            {
+                Id = ObjectId.GenerateNewId(),
+                Name = newItemName,
+                Complete = false
+            };
 
-                var listFilter = Builders<ToDoList>.Filter.Eq("userId", userId);
-                var list = _db.Lists.FindSync(listFilter).FirstOrDefault();
-            
+            var listFilter = Builders<ToDoList>.Filter.Eq("userId", userId);
+            var list = _db.Lists.FindSync(listFilter).FirstOrDefault();
+
             if (list == null) return null;
-            if(list.Id != new ObjectId(listId)) throw new Exception("Unable to find the list for that user");
-//                list.ItemIds.Add(newItem.Id);
-                list.Items.Add(newItem);
-//
-                //_db.Items.InsertOne(newItem);
-            //_db.Lists.UpdateOne(list);
-            
+            if (list.Id != new ObjectId(listId)) throw new Exception("Unable to find the list for that user");
+
+            list.Items.Add(newItem);
+
             _db.Lists
                 .ReplaceOneAsync(n => n.Id.Equals(new ObjectId(listId))
                     , list
-                    , new UpdateOptions { IsUpsert = true });
-            
+                    , new UpdateOptions {IsUpsert = true});
+
             return list;
-//            }
-//            catch (Exception ex)
-//            {
-//                Console.WriteLine("exception using db access for user " + userId + ". Ex: " + ex.Message);
-//            }
         }
 
         public ToDoList CreateEmptyList(string userId, string listName)
         {
-//            try
-//            {
-                var newList = new ToDoList
-                {
-                    UserId = userId,
-                    Name = listName,
-                    //ItemIds = new List<ObjectId>(),
-                    Items = new List<ToDoItem>()
-                };
-                _db.Lists.InsertOne(newList);
-                return newList;
-//            }
-//            catch (Exception e)
-//            {
-//                throw e;
-//            }
+            var newList = new ToDoList
+            {
+                UserId = userId,
+                Name = listName,
+
+                Items = new List<ToDoItem>()
+            };
+            _db.Lists.InsertOne(newList);
+            return newList;
         }
 
         public void DeleteListsForUser(string userId)
@@ -124,25 +98,25 @@ namespace Web.Data
 
             list.Items[itemToUpdateIndex].Complete = true;
             list.Items[itemToUpdateIndex].CompletedAt = completedAt;
-            
+
             _db.Lists
                 .ReplaceOneAsync(n => n.Id.Equals(new ObjectId(listId))
                     , list
-                    , new UpdateOptions { IsUpsert = true });
-        }        
+                    , new UpdateOptions {IsUpsert = true});
+        }
 
         public void UncheckItem(string userId, string listId, string itemId)
         {
             var list = GetExistingList(userId, listId);
             var itemToUpdateIndex = GetItemIndexWithId(list, itemId);
-            
+
             list.Items[itemToUpdateIndex].Complete = false;
             list.Items[itemToUpdateIndex].CompletedAt = null;
-            
+
             _db.Lists
                 .ReplaceOneAsync(n => n.Id.Equals(new ObjectId(listId))
                     , list
-                    , new UpdateOptions { IsUpsert = true });
+                    , new UpdateOptions {IsUpsert = true});
         }
 
         public void RemoveItem(string userId, string listId, string itemId)
@@ -163,9 +137,6 @@ namespace Web.Data
             var builder = Builders<ToDoList>.Filter;
             var listFilter = builder.Eq("userId", userId) & builder.Eq("_id", new ObjectId(listId));
             _db.Lists.DeleteOne(listFilter);
-            
-            //var list = GetList(userId, listId);
-            //if (list != null) throw new Exception();
         }
 
         private ToDoList GetExistingList(string userId, string listId)
@@ -175,7 +146,7 @@ namespace Web.Data
             if (list == null) throw new Exception("Unable to find list with id " + listId);
             return list;
         }
-        
+
         private int GetItemIndexWithId(ToDoList list, string itemId)
         {
             var itemToUpdateIndex = list.Items.FindIndex(x => x.Id == new ObjectId(itemId));

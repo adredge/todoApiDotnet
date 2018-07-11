@@ -18,7 +18,8 @@ namespace Web.Controllers
         [Route("/api/list")]
         public ToDoList Get()
         {
-            return _repository.GetList("amy-dredge", "");
+            var userId = Request.Cookies["user"];
+            return _repository.GetList(userId, "");
         }
 
         [HttpPost]
@@ -26,7 +27,8 @@ namespace Web.Controllers
         public void Post(NewToDoItem item)
         {
             //TO DO: Get user cookie
-            _repository.AddItem("amy-dredge", item.ListId, item.NewItemName);
+            var userId = Request.Cookies["user"];
+            _repository.AddItem(userId, item.ListId, item.NewItemName);
         }
     }
 

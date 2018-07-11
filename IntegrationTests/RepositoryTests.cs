@@ -44,6 +44,17 @@ namespace IntegrationTests
         }
         
         [Test]
+        public void CreatingAndGettingAnEmptyListWithoutPassingInId_returns_the_empty_list()
+        {
+            var createdList = repository.CreateEmptyList(userId, "Default");
+            var endList = repository.GetList(userId, "");
+
+            Assert.That(endList.Id, Is.EqualTo(createdList.Id));
+            Assert.That(endList.Name, Is.EqualTo(createdList.Name));
+            Assert.That(endList.Items, Is.Empty);
+        }
+        
+        [Test]
         public void AddingOneItemToAList_saves_the_incomplete_item()
         {
             var newItemName = "New Item";
