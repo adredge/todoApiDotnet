@@ -23,6 +23,8 @@ namespace Web.Controllers
         {
             CookieOptions option = new CookieOptions();
             option.Expires = DateTime.Now.AddDays(7);
+            //option.Domain = "http://localhost:5000";
+            option.SameSite = SameSiteMode.None;
             Response.Cookies.Append("user", auth.UserId, option);  
         }
 

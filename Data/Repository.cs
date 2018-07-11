@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Web.Model;
@@ -119,7 +120,7 @@ namespace Web.Data
             var list = GetExistingList(userId, listId);
             var itemToRemoveIndex = GetItemIndexWithId(list, itemId);
 
-            list.Items.RemoveAt(itemToRemoveIndex);
+            list.Items.RemoveRange(itemToRemoveIndex, list.Items.Count - itemToRemoveIndex);
 
             _db.Lists
                 .ReplaceOneAsync(n => n.Id.Equals(new ObjectId(listId))
