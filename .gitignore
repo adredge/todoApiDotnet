@@ -1,0 +1,10 @@
+*.idea/
+*.suo
+*.user
+*.cache
+*.xml
+[Dd]ebug/
+[Bb]in/
+obj/
+Release/
+packages/

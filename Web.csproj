@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MongoDB.Driver">
+      <Version>2.7.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="IntegrationTests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="IntegrationTests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="IntegrationTests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="IntegrationTests\**" />
+  </ItemGroup>
+</Project>
