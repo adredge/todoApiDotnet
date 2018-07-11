@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Web.Data;
 using Web.Model;
+using Web.RequestModels;
 
 namespace Web.Controllers
 {
@@ -14,6 +17,15 @@ namespace Web.Controllers
             _repository = repository;
         }
 
+        [HttpPost]
+        [Route("/api/auth")]
+        public void Authenticate(UserAuth auth)
+        {
+            CookieOptions option = new CookieOptions();
+            option.Expires = DateTime.Now.AddDays(7);
+            Response.Cookies.Append("user", auth.UserId, option);  
+        }
+
         [HttpGet]
         [Route("/api/list")]
         public ToDoList Get()
@@ -21,20 +33,45 @@ namespace Web.Controllers
             var userId = Request.Cookies["user"];
             return _repository.GetList(userId, "");
         }
+        
+        [HttpPost]
+        [Route("/api/createList")]
+        public ToDoList CreateList()
+        {
+            var userId = Request.Cookies["user"];
+            return _repository.CreateEmptyList(userId, "Default");
+        }
+        
+        [HttpPut]
+        [Route("/api/checkItem")]
+        public void CheckItem(CheckToDoItem item)
+        { 
+            var userId = Request.Cookies["user"];
+            _repository.CheckItem(userId, item.ListId, item.ItemId, item.CompletedAt);
+        }
+        
+        [HttpPut]
+        [Route("/api/uncheckItem")]
+        public void UncheckItem(UpdateToDoItem item)
+        { 
+            var userId = Request.Cookies["user"];
+            _repository.UncheckItem(userId, item.ListId, item.ItemId);
+        }
+        
+        [HttpDelete]
+        [Route("/api/removeItem/{listId}/{itemId}")]
+        public void DeleteItem(string listId, string itemId)
+        { 
+            var userId = Request.Cookies["user"];
+            _repository.RemoveItem(userId, listId, itemId);
+        }
 
         [HttpPost]
         [Route("/api/addItem")]
-        public void Post(NewToDoItem item)
-        {
-            //TO DO: Get user cookie
+        public void AddItem(NewToDoItem item)
+        { 
             var userId = Request.Cookies["user"];
             _repository.AddItem(userId, item.ListId, item.NewItemName);
         }
-    }
-
-    public class NewToDoItem
-    {
-        public string ListId { get; set; }
-        public string NewItemName { get; set; }
     }
 }
